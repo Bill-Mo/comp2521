@@ -1,0 +1,30 @@
+
+NOTE:
+- Your time complexities should be expressed in big-O notation and be in
+  terms of n, where n is the number of people who  have  been  added  to
+  Friendbook.
+
+===============
+  FbUnfriend
+===============
+
+- Worst case time complexity: O(log n)
+
+- Explanation: There is not a particular worst case. All steps FbUnfriend does are simple except calling nameToId. So the time complexity is the same as nameToId, that is log n.
+
+===============
+FbMutualFriends
+===============
+
+- Worst case time complexity: O(n + log n)
+
+- Explanation: Apart from nameToId, there is a for loop going through every names. So time complexity should be n + log n.
+
+===============
+ FbFriendRecs1
+===============
+
+- Worst case time complexity: O(n^2 + log n)
+
+- Explanation: Log n comes from nameToId. Though there is a while loop at biginning, it goes through fixed time. So it does not affect time complexity. Similar to FbMutualFriends, the for loop goes through every names so it goes n times. Inside for loop, FbMutualFriends is called. Though the maximum time it can be called is (n-2), the time complexity is n^2 for this part.
+

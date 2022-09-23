@@ -1,0 +1,23 @@
+Input	Has	Initial	Number	AvgTime	AvgTime
+Size	Dups	Order	of runs	forusel	forsort
+10000	no	random	7	0.121s	0.011s
+10000	no	sorted	7	0.006s	0.005s
+10000	no	reverse	7	0.009s	0.007s
+10000	yes	random	7	0.125s	0.014s
+10000	yes	sorted	7	0.007s	0.006s
+10000	yes	reverse	7	0.009s	0.009s
+20000	no	random	7	0.570s	0.017s
+20000	no	sorted	7	0.012s	0.011s
+20000	no	reverse	7	0.009s	0.009s
+20000	yes	random	7	0.547s	0.015s
+20000	yes	sorted	7	0.015s	0.010s
+20000	yes	reverse	7	0.009s	0.008s
+40000	no	random  7	3.225s	0.023s
+40000	no	sorted	7	0.015s	0.010s
+40000	no	reverse	7	0.013s	0.014s
+40000	yes	random	7	3.025s	0.023s
+40000	yes	sorted	7	0.012s	0.013s
+40000	yes	reverse	7	0.015s	0.015s
+...
+
+processing random list is time-consuming. Either my code or sort process random lists slower than them processing sorted and reverse lists. I guess it is because unlike random list, sorted list and reverse list are kind of regular that the programs can manage it easily.

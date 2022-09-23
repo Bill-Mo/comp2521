@@ -1,0 +1,220 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "List.h"
+#include "FlightDb.h"
+#include "AVLTree.h"
+
+struct flightDb {
+	Tree ByFlightNumber;
+	Tree ByDepartureAirportDay;
+	Tree ByDayFlightNumber;
+};
+
+int compareByFlightNumber(Record r1, Record r2) {
+    int diffFNumber = strcmp(RecordGetFlightNumber(r1), RecordGetFlightNumber(r2));
+    if (diffFNumber) {
+        return diffFNumber;
+    } else {
+        int diffDay = RecordGetDepartureDay(r1) - RecordGetDepartureDay(r2);
+        if (diffDay) {
+            return diffDay;
+        } else {
+            int diffHour = RecordGetDepartureHour(r1) - RecordGetDepartureHour(r2);
+            if (diffHour) {
+                return diffHour;
+            } else {
+                int diffMinute = RecordGetDepartureMinute(r1) - RecordGetDepartureMinute(r2);
+                if (diffMinute) {
+                    return diffMinute;
+                } else {
+                    return strcmp(RecordGetDepartureAirport(r1), RecordGetDepartureAirport(r2));
+                }
+            }
+        }
+    }
+}
+
+int compareByDepartureAirportDay(Record r1, Record r2) {
+    int diffDAirport = strcmp(RecordGetDepartureAirport(r1), RecordGetDepartureAirport(r2));
+    if (diffDAirport) {
+        return diffDAirport;
+    } else {
+        int diffDay = RecordGetDepartureDay(r1) - RecordGetDepartureDay(r2);
+        if (diffDay) {
+            return diffDay;
+        } else {
+            int diffHour = RecordGetDepartureHour(r1) - RecordGetDepartureHour(r2);
+            if (diffHour) {
+                return diffHour;
+            } else {
+                int diffMinute = RecordGetDepartureMinute(r1) - RecordGetDepartureMinute(r2);
+                if (diffMinute) {
+                    return diffMinute;
+                } else {
+                    return strcmp(RecordGetFlightNumber(r1), RecordGetFlightNumber(r2));
+                }
+            }
+        }
+    }
+}
+
+int compareByDayFlightNumber(Record r1, Record r2) {
+int diffDay = RecordGetDepartureDay(r1) - RecordGetDepartureDay(r2);
+    if (diffDay) {
+        return diffDay;
+    } else {
+        int diffHour = RecordGetDepartureHour(r1) - RecordGetDepartureHour(r2);
+        if (diffHour) {
+            return diffHour;
+        } else {
+            int diffMinute = RecordGetDepartureMinute(r1) - RecordGetDepartureMinute(r2);
+            if (diffMinute) {
+                return diffMinute;
+            } else {
+                int diffFNumber = strcmp(RecordGetFlightNumber(r1), RecordGetFlightNumber(r2));
+                if (diffFNumber) {
+                    return diffFNumber;
+                } else {
+                    return strcmp(RecordGetDepartureAirport(r1), RecordGetDepartureAirport(r2));
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Creates a new flight DB. 
+ * You MUST use the AVLTree ADT (from Task 1) in your implementation.
+ */
+FlightDb DbNew(void) {
+    FlightDb db = malloc(sizeof(*db));
+    if (db == NULL) {
+        fprintf(stderr, "error: out of memory\n");
+        exit(EXIT_FAILURE);
+    }
+
+    db->ByFlightNumber = TreeNew(compareByFlightNumber);
+    db->ByDepartureAirportDay = TreeNew(compareByDepartureAirportDay);
+    db->ByDayFlightNumber = TreeNew(compareByDayFlightNumber);
+    return db;
+}
+
+/**
+ * Frees all memory allocated to the given flight DB
+ */
+void     DbFree(FlightDb db) {
+    TreeFree(db->ByFlightNumber, false);
+    TreeFree(db->ByDayFlightNumber, false);
+    TreeFree(db->ByDepartureAirportDay, true);
+    free(db);
+}
+
+/**
+ * Inserts  a  flight  record  into the given DB if there is not already
+ * record with the same flight number, departure airport, day, hour  and
+ * minute.
+ * If  inserted successfully, this function takes ownership of the given 
+ * record (so the caller should not modify or free it). 
+ * Returns true if the record was successfully inserted,  and  false  if
+ * the  DB  already  contained  a  record  with  the same flight number,
+ * departure airport, day, hour and minute.
+ * The time complexity of this function must be O(log n).
+ * You MUST use the AVLTree ADT (from Task 1) in your implementation.
+ */
+bool     DbInsertRecord(FlightDb db, Record r) {
+    if (TreeInsert(db->ByFlightNumber, r)) {
+        TreeInsert(db->ByDepartureAirportDay, r);
+        TreeInsert(db->ByDayFlightNumber, r);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Searches  for  all  records with the given flight number, and returns
+ * them all in a list in increasing order of  (day, hour, min).  Returns
+ * an empty list if there are no such records. 
+ * The  records  in the returned list should not be freed, but it is the
+ * caller's responsibility to free the list itself.
+ * The time complexity of this function must be O(log n + m), where m is
+ * the length of the returned list.
+ * You MUST use the AVLTree ADT (from Task 1) in your implementation.
+ */
+List     DbFindByFlightNumber(FlightDb db, char *flightNumber) {
+	Record lower = RecordNew(flightNumber, "0", "0", 0, 0, 0, 0);
+    Record upper = RecordNew(flightNumber, "zzzzzzzz", "zzzzzzzz", 6, 23, 59, 10000);
+    List l = TreeSearchBetween(db->ByFlightNumber, lower, upper);
+    RecordFree(lower);
+    RecordFree(upper);
+    return l;
+}
+
+/**
+ * Searches  for all records with the given departure airport and day of
+ * week (0 to 6), and returns them all in a list in increasing order  of
+ * (hour, min, flight number).
+ * Returns an empty list if there are no such records.
+ * The  records  in the returned list should not be freed, but it is the
+ * caller's responsibility to free the list itself.
+ * The time complexity of this function must be O(log n + m), where m is
+ * the length of the returned list.
+ * You MUST use the AVLTree ADT (from Task 1) in your implementation.
+ */
+List     DbFindByDepartureAirportDay(FlightDb db, char *departureAirport,
+                                     int day) {
+	Record lower = RecordNew("0", departureAirport, "0", day, 0, 0, 0);
+    Record upper = RecordNew("zzzzzzzz", departureAirport, "zzzzzzzz", day, 23, 59, 10000);
+    List l = TreeSearchBetween(db->ByDepartureAirportDay, lower, upper);
+    RecordFree(lower);
+    RecordFree(upper);
+    return l;
+}
+
+
+/**
+ * Searches  for  all  records  between  (day1, hour1, min1)  and (day2,
+ * hour2, min2), and returns them all in a list in increasing  order  of
+ * (day, hour, min, flight number).
+ * Returns an empty list if there are no such records.
+ * The  records  in the returned list should not be freed, but it is the
+ * caller's responsibility to free the list itself.
+ * The time complexity of this function must be O(log n + m), where m is
+ * the length of the returned list.
+ * You MUST use the AVLTree ADT (from Task 1) in your implementation.
+ */
+List     DbFindBetweenTimes(FlightDb db, 
+                            int day1, int hour1, int min1, 
+                            int day2, int hour2, int min2) {
+	Record lower = RecordNew("0", "0", "0", day1, hour1, min1, 0);
+    Record upper = RecordNew("zzzzzzzz", "zzzzzzzz", "zzzzzzzz", day2, hour2, min2, 10000);
+    List l = TreeSearchBetween(db->ByDayFlightNumber, lower, upper);
+    RecordFree(lower);
+    RecordFree(upper);
+    return l;
+}
+
+/**
+ * Searches  for  and  returns  the  earliest next flight from the given
+ * departure airport, on or after the given (day, hour, min).
+ * The returned record must not be freed or modified. 
+ * The time complexity of this function must be O(log n).
+ * You MUST use the AVLTree ADT (from Task 1) in your implementation.
+ */
+Record   DbFindNextFlight(FlightDb db, char *departureAirport, 
+                          int day, int hour, int min) {
+	Record dummy = RecordNew("0", departureAirport, "0", day, hour, min, 0);
+    Record r = TreeNext(db->ByDepartureAirportDay, dummy);
+    if (r == NULL) {
+        Record dummy1 = RecordNew("0", departureAirport, "0", 0, 0, 0, 0);
+        Record r1 = TreeNext(db->ByDepartureAirportDay, dummy1);
+        RecordFree(dummy1);
+        return r1;
+    }
+    RecordFree(dummy);
+    return r;
+}
+

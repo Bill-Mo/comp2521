@@ -1,0 +1,72 @@
+// Centrality Measures ADT interface
+// COMP2521 Assignment 2
+
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "CentralityMeasures.h"
+#include "FloydWarshall.h"
+#include "Graph.h"
+
+/**
+ * Finds  the  edge  betweenness  centrality  for each edge in the given
+ * graph and returns the results in a  EdgeValues  structure.  The  edge
+ * betweenness centrality of a non-existant edge should be set to -1.0.
+ */
+EdgeValues edgeBetweennessCentrality(Graph g) {
+    // Create a new EdgeValues
+    int nV = GraphNumVertices(g);
+	EdgeValues e;
+	e.numNodes = nV;
+	e.values = (double**)malloc(nV * sizeof(double*));
+	for (int i = 0; i < nV; i++) {
+	    e.values[i] = (double*)malloc(nV * sizeof(double));
+
+        for (int j = 0; j < nV; j++) {
+            e.values[i][j] = -1.0;
+            // Check if there is an edge between i and j
+            if (GraphIsAdjacent(g, i, j)) {
+                e.values[i][j] = 0;
+            }
+        }
+    }
+    // Find the shortest paths
+    ShortestPaths sps = FloydWarshall(g);
+    for (int i = 0; i < nV ; i++) {
+        for (int j = 0; j < nV; j++) {
+            // Check is there a path between i and j
+            if (sps.dist[i][j] != INFINITY) {
+                int k = i;
+                // Increase every edges in path from i to j
+                while (sps.next[k][j] != -1) {
+                    int k_previous = k;
+                    k = sps.next[k][j];
+                    e.values[k_previous][k]++;
+                }
+            }
+        }
+    }
+	return e;
+}
+
+/**
+ * Prints  the  values in the given EdgeValues structure to stdout. This
+ * function is purely for debugging purposes and will NOT be marked.
+ */
+void showEdgeValues(EdgeValues evs) {
+
+}
+
+/**
+ * Frees all memory associated with the given EdgeValues  structure.  We
+ * will call this function during testing, so you must implement it.
+ */
+void freeEdgeValues(EdgeValues evs) {
+    for (int i = 0; i < evs.numNodes; i++) {
+        free(evs.values[i]);
+    }
+    free(evs.values);
+}
+
+

@@ -1,0 +1,21 @@
+
+NOTE:
+- Your time complexities should be expressed in big-O notation and be in
+  terms of n, where n is the number of cells in the maze.
+
+============
+  solveBfs
+============
+
+- Worst case time complexity: O(n^2)
+
+- Explanation: Creating and freeing a cells matrix count for time complexity of n because it have to do n times malloc and free. The time complexity of first while loop depends on how far the maze is, so it should be n. Two inner for loop will do 9 times in all, so they count for O(1). Mazevisit and MazeMarkPath include a function showState, whose time complexity is n. Because Mazevisit is in while loop, so time complexity of them is n^2. To mark path, MazeMarkPath should be called n times. So the time complexity of that is n^2 as well. All in all, time complexity is O(n^2).
+
+============
+  solveDfs
+============
+
+- Worst case time complexity: O(n^2)
+
+- Explanation: The only different between solveBfs and solveDfs is replacing QueueNew with StackNew, QueueDequeue with StackPop, QueueEnqueue with StackPush, QueueFree with StackFree. Their time complexity are same, so time complexity of solveDfs is n^2 as well.
+

@@ -1,0 +1,16 @@
++ 1 Mathew Bob
++ 10 Black Smith
++ 50 Raymond Josh
++ 100 Raymond Josh
++20000 Jonathan Bak
+lz 
+ln
+fz 10
+fn Raymond Josh
+fz 2
+fn Mathew Bob
+fn Black Smith
+d 1
+lz
+fz 1
+q
